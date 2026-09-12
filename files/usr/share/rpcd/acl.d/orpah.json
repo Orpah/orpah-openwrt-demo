@@ -1,0 +1,12 @@
+{
+	"luci-app-orpah": {
+		"description": "ORPAH Router 状态与配置",
+		"read": {
+			"ubus": { "orpah": [ "status" ] },
+			"uci": [ "orpah" ]
+		},
+		"write": {
+			"uci": [ "orpah" ]
+		}
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"admin/services/orpah": {
+		"title": "ORPAH Router",
+		"order": 60,
+		"action": { "type": "view", "path": "orpah/router" },
+		"depends": { "acl": [ "luci-app-orpah" ] }
+	}
+}

@@ -1,0 +1,34 @@
+#!/bin/sh
+# ORPAH Router 状态后端（rpcd → LuCI）
+#
+# 只读一个文件：daemon 每 5s 原子写的 /var/run/orpah/status.json
+# （daemon 未运行 / 还没写过 / 被 stop_service 删掉 → ok=false + 原因）。
+#
+# 为什么不让 LuCI 直接读文件：rpcd 的 ACL 是按 ubus 对象授权的，页面走 ubus 才能
+# 被 /usr/share/rpcd/acl.d/orpah.json 收口；也让页面不用管文件路径。
+
+. /usr/share/libubox/jshn.sh
+
+STATUS_FILE=/var/run/orpah/status.json
+
+status() {
+	json_init
+	if [ -r "$STATUS_FILE" ] && json_load "$(cat "$STATUS_FILE")"; then
+		json_dump
+	else
+		json_add_boolean ok 0
+		json_add_string reason "no-status-file"
+		json_dump
+	fi
+}
+
+case "$1" in
+list)
+	echo '{ "status": { } }'
+	;;
+call)
+	case "$2" in
+	status) status ;;
+	esac
+	;;
+esac

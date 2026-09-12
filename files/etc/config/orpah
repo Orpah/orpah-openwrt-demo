@@ -1,0 +1,30 @@
+# ORPAH Router —— OpenWrt 配置（**字段的单一源**）
+#
+# 字段名只在本文件里定义：daemon 自己解析本文件（见 orpahd/config.py 的取舍说明），
+# 所以**改字段不用改 init 脚本**。init 脚本只读 `enabled` 决定起不起进程。
+# tests/test_package_files.py 会检查「init 脚本 / LuCI 表单引用的字段都存在于本文件」，
+# 防止出现「改了配置像没改」的静默失效。
+
+config orpah 'main'
+	# 是否随开机启动（只由 /etc/init.d/orpah 消费；daemon 自己不看这个字段）
+	option enabled '0'
+
+	# 本路由器的站位标识：
+	#   目前**只用于日志与状态页显示**。路由器侧观测（xport：router_bssid/router_rssi/rx_ts）
+	#   尚未实现（上游开放问题），所以它暂时不进任何报文 —— 别以为填了它 Server 就知道是谁。
+	option station_id 'AP-01'
+
+	# 空口接入点：本阶段 = 模拟器的 host 数据口（`sim.py --host <port>`）。
+	# 真机（TH-RJ45 经 RJ45 送来 0x88B5 帧）需要换传输实现，属下一阶段（见 README「未做」）。
+	option ap_host '127.0.0.1'
+	option ap_port '9421'
+
+	# ORPAH Server（真实 UDP；默认端口 = orpah_proto.ORPAH_UDP_PORT）
+	option server_host '127.0.0.1'
+	option server_port '19447'
+
+	# 本机 MAC：下行注入帧的源地址（RouterBridge 的 self_mac）
+	option self_mac '4A:06:59:80:00:01'
+
+	# info = 逐帧日志（上游默认）；warn = 关掉逐帧日志，只留错误
+	option log_level 'info'
