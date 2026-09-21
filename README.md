@@ -37,7 +37,55 @@ ORPAH-over-HaLow 的**路由器侧**：把 ORPAH 业务跑在 OpenWrt 路由器�
 
 ---
 
+## 一图看懂（架构）
+
+谁产生配置、谁读配置、谁看状态 —— 一张图说完（节点名就是仓库里的文件名）：
+
+```mermaid
+flowchart TB
+  subgraph OUT["OpenWrt 上的文件（files/ 等价于 /）"]
+    UCI["/etc/config/orpah<br/>字段的唯一来源"]
+    INIT["/etc/init.d/orpah<br/>procd 启停，只读 enabled"]
+    RPCD["/usr/libexec/rpcd/orpah<br/>状态 + 配置读写"]
+    LUCI["LuCI 视图<br/>view/orpah/router.js"]
+  end
+  subgraph PROC["daemon 进程（PC / OpenWrt 通用）"]
+    CFG["orpahd/config.py<br/>UCI 解析 + 校验<br/>非法配置 → 退出码 2"]
+    DMN["orpahd/daemon.py + router_daemon.py<br/>建桥 · 转 REPORT · 注入下行 · 状态落盘"]
+    STAT["状态文件<br/>rpcd 读的就是它"]
+  end
+  V1["vendor/orpah/<br/>orpah_proto · host_bus · router · waiting<br/>（从 orpah-over-halow 逐字节复制，不许改）"]
+  UCI --> CFG --> DMN --> STAT --> RPCD
+  RPCD --> LUCI
+  LUCI -->|"保存并应用"| RPCD
+  RPCD -->|"写配置"| UCI
+  INIT -->|"start / stop / reload"| DMN
+  V1 --> DMN
+```
+
+字段只有一处（`/etc/config/orpah`）：init 脚本只读 `enabled`，其余由 daemon 自己解析；
+LuCI 直接读写同一份文件。**本仓不碰真机**（阶段 B）：可以画这张框图，但没有“在 OpenWrt 上跑过”
+的截图/照片（见 `AGENTS.md` §0）。
+
 ## 数据通路
+
+本阶段（PC，用模拟器当空口）与真机形态（下一阶段）的对照 —— 下面两段 ASCII 是同一个东西的
+**文件级版本**（哪一段是哪个脚本）：
+
+```mermaid
+flowchart LR
+  subgraph PC["本阶段：纯 PC（模拟器当空口，已跑通）"]
+    direction LR
+    C1["client.py"] -->|"STA 模拟器"| AIR1["虚拟空口<br/>TCP · AA 55 … CRC8"] -->|"AP 模拟器 host 数据口 :9421"| D1["本仓 daemon"]
+  end
+  subgraph RM["真机形态（下一阶段，未验证）"]
+    direction LR
+    C2["Client：TX-AH(STA) + CH32V203"] -.->|"HaLow 空口"| AP2["TH-RJ45：AP"] -->|"RJ45 网口 · 802.3 帧 ethertype 0x88B5"| D2["本仓 daemon"]
+    AP2 -.->|"USB-C 只供电 + AT 配置（CH340）—— 不是网口"| X["无线参数不走 OpenWrt 的 wlan/hostapd"]
+  end
+  D1 -->|"真实 UDP 19447"| SV["ORPAH Server<br/>权威走失库"]
+  D2 -->|"真实 UDP"| SV
+```
 
 本阶段（PC，用模拟器当空口）：
 
