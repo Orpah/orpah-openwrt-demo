@@ -42,6 +42,16 @@
   import 期望一致。本机缺 `sh`/`node` 时**明确跳过**（不能默默当通过）。
 - 端到端套件用 `tests/fake_air.py`（假 AP + 假 Server，**复用上游 host_bus 的帧编解码**）。
   **不要**在夹具里另写一份帧格式 —— 那会变成「测夹具」而不是「测代码」。
+- ★★ **CI = 第三方环境交叉验证**（2026-10-12 加 ✓）：`.github/workflows/checks.yml` ——
+  `ubuntu-latest` / `windows-latest` / `macos-latest` 三栏（`fail-fast: false` ✓）各跑**同一份**
+  `python run_checks.py` ✓（本仓没有台架、没有真机 ⇒ 不加额外开关 ✓）。
+  ★ 本仓最值钱的是 **Windows 栏** ✓：AGENTS §5 记的那几条都是 **Windows 专属**（`subprocess` 按
+  GBK 解码 ✗、`shutil.which("sh")` 找到 WSL 的 bash ✗、任务 JSON 吃双引号 ✗）—— 它们平常只在
+  **一台**机器上被验过 ✗ ⇒ 干净机器上跑一遍才知道是真是假 ✓；三栏都带 `sh`/`node` ✓
+  ⇒ 那两项静态检查在 CI 里**应当真的跑到**（"跳过"会明说，看日志 ✓）。
+  **它不证明** ✗：① **不是真机、也不是 OpenWrt** ✗（§0：本阶段不碰真机 ⇒ 绿**不许**读成
+  "在 OpenWrt 上验证过"：SDK 构建 / LuCI 真渲染 / 网口 / AT 配无线都不在 ✓）；
+  ② 没有 rootfs ⇒ `Makefile` 的安装路径只是**静态**核对 ✓（没有真的 `opkg install` ✓）。
 
 ## 4. 等待与超时（沿用上游铁律）
 

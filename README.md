@@ -117,6 +117,17 @@ python run_checks.py
 三套件：配置解析 / 打包文件一致性 + 语法检查 / daemon 端到端（进程内假 AP + 假 Server）。
 报告写到 `checks_report.md`。
 
+**CI（GitHub Actions）= 同一套三套件，换机器 / 换系统再跑一遍** ✓ ——
+`.github/workflows/checks.yml` 是 **Linux / Windows / macOS 三栏**（`fail-fast: false` ✓），
+三栏跑的是**同一份** `python run_checks.py` ✓，不额外加开关 ✓。
+★ 本仓最值钱的是 **Windows 栏** ✓：AGENTS §5 记的那几条都是 Windows 专属（`subprocess` 按 GBK
+解码 ✗、`shutil.which("sh")` 找到 WSL 的 bash ✗、任务 JSON 吃双引号 ✗）—— 它们平常只在**一台**
+机器上被验过 ✗ ⇒ 干净机器上跑一遍才知道是真是假 ✓（三栏都带 `sh`/`node` ⇒ 那两项静态检查
+**应当真的跑到** ✓，"跳过"会明说 ✓）。
+★ 但它**不证明** ✗：**不是真机、也不是 OpenWrt** ✗ —— 本仓 AGENTS §0 明确本阶段「不碰真机」，
+所以这里的绿**不许**读成「在 OpenWrt 上验证过」：SDK 构建 / LuCI 真渲染 / 网口 / AT 配无线**都不在** ✓；
+端到端那套走的是 `tests/fake_air.py` 的**假 AP + 假 Server** ✓，也没有 rootfs 去真的 `opkg install` ✓。
+
 ### 2. 只跑 daemon（需要一个 AP 的 host 数据口）
 
 ```bash

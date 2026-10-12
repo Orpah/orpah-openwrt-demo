@@ -1,7 +1,7 @@
 # ORPAH Router 自检报告（OpenWrt 侧）
 
-- 生成时间：2026-09-13 00:13:38
-- HEAD：`ba3919e`
+- 生成时间：2026-10-12 15:27:09
+- HEAD：`0127d66`
 - Python：3.13.14
 - 结果：**3/3 通过**
 
@@ -10,9 +10,9 @@
 
 | 套件 | 结果 | 用时 | 退出码 |
 |---|---|---|---|
-| 配置解析（UCI / 简写 / 非法值） | 通过 | 0.09s | 0 |
-| 打包文件一致性 + 语法检查 | 通过 | 0.43s | 0 |
-| daemon 端到端（假 AP + 假 Server） | 通过 | 0.71s | 0 |
+| 配置解析（UCI / 简写 / 非法值） | 通过 | 0.24s | 0 |
+| 打包文件一致性 + 语法检查 | 通过 | 0.46s | 0 |
+| daemon 端到端（假 AP + 假 Server） | 通过 | 0.84s | 0 |
 
 ## 配置解析（UCI / 简写 / 非法值）
 
@@ -43,7 +43,7 @@ test_port_not_a_number (__main__.TestValidation.test_port_not_a_number) ... ok
 test_port_out_of_range (__main__.TestValidation.test_port_out_of_range) ... ok
 
 ----------------------------------------------------------------------
-Ran 17 tests in 0.007s
+Ran 17 tests in 0.035s
 
 OK
 ```
@@ -77,7 +77,7 @@ test_luci_view_js (__main__.TestSyntax.test_luci_view_js) ... ok
 test_shell_scripts (__main__.TestSyntax.test_shell_scripts) ... ok
 
 ----------------------------------------------------------------------
-Ran 16 tests in 0.332s
+Ran 16 tests in 0.336s
 
 OK
 ```
@@ -107,7 +107,7 @@ test_main_returns_2_when_file_missing (__main__.TestConfigErrorPath.test_main_re
 ok
 
 ----------------------------------------------------------------------
-Ran 12 tests in 0.611s
+Ran 12 tests in 0.558s
 
 OK
 ```
