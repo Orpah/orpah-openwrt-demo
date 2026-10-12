@@ -45,7 +45,7 @@
 - ★★ **CI = 第三方环境交叉验证**（2026-10-12 加 ✓）：`.github/workflows/checks.yml` ——
   `ubuntu-latest` / `windows-latest` / `macos-latest` 三栏（`fail-fast: false` ✓）各跑**同一份**
   `python run_checks.py` ✓（本仓没有台架、没有真机 ⇒ 不加额外开关 ✓）。
-  ★ 本仓最值钱的是 **Windows 栏** ✓：AGENTS §5 记的那几条都是 **Windows 专属**（`subprocess` 按
+  ★ **Windows 栏**量的是 AGENTS §5 记的那几条 **Windows 专属**假设（`subprocess` 按
   GBK 解码 ✗、`shutil.which("sh")` 找到 WSL 的 bash ✗、任务 JSON 吃双引号 ✗）—— 它们平常只在
   **一台**机器上被验过 ✗ ⇒ 干净机器上跑一遍才知道是真是假 ✓；三栏都带 `sh`/`node` ✓
   ⇒ 那两项静态检查在 CI 里**应当真的跑到**（"跳过"会明说，看日志 ✓）。
